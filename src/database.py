@@ -16,3 +16,11 @@ def load_to_sqlite(df, logger):
     logger.info("Base de datos guardada en: %s", DATABASE_FILE)
 
     return DATABASE_FILE
+
+
+def load_analysis_tables(tables, logger):
+    """Agrega salidas analíticas para consumo directo desde herramientas BI."""
+    with sqlite3.connect(DATABASE_FILE) as connection:
+        for table_name, dataframe in tables.items():
+            dataframe.to_sql(table_name, connection, if_exists="replace", index=False)
+            logger.info("Tabla BI %s cargada: %s registros", table_name, len(dataframe))

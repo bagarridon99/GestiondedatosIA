@@ -1,6 +1,6 @@
 import pandas as pd
 
-from config import METADATA_FILE, RAW_FILE
+from config import METADATA_FILE, PIPELINE_SAMPLE_SIZE, RAW_FILE
 
 
 def ingest_data(logger):
@@ -13,6 +13,9 @@ def ingest_data(logger):
         raise FileNotFoundError(f"No se encontró la metadata requerida: {METADATA_FILE}")
 
     df = pd.read_csv(RAW_FILE)
+    if PIPELINE_SAMPLE_SIZE:
+        df = df.head(PIPELINE_SAMPLE_SIZE).copy()
+        logger.info("Muestra solicitada para comparación: %s registros", len(df))
     filas, columnas = df.shape
     logger.info("Metadata del caso encontrada en: %s", METADATA_FILE)
     logger.info("Datos ingestados: %s filas y %s columnas", filas, columnas)
