@@ -169,6 +169,7 @@ th,td{{border:1px solid #dbe3ec;padding:7px;text-align:left;white-space:nowrap}}
 <div class="panel scroll" style="margin-top:18px"><h3>Muestra de predicciones del modelo</h3>
 <p class="legend">Compara la columna <em>Real</em> (lo que ocurrió) con <em>Predicho</em> (lo que estimó el modelo): cuando coinciden, acertó. <em>Prob. incumplimiento</em> va de 0 a 1; mientras más alta, más riesgo asignó el modelo.</p>{predictions_sample_html}</div>
 <p class="note">Estos datos se leen directamente de la base de datos generada por el pipeline. La probabilidad de incumplimiento es la salida real del modelo para cada caso.</p>
+<p class="note"><strong>Integración con BI:</strong> las 6 tablas de la base SQLite (datos validados, predicciones, métricas, comparación de modelos, rendimiento y matriz de riesgos) y los archivos CSV quedan listos para conectarse a Power BI o Metabase. La guía paso a paso está en <code>reportes/guia_integracion_bi.md</code>.</p>
 
 <h2>5. Seguridad y riesgos</h2><div class="panel scroll">{risks_html}</div>
 <p class="note">Los datos incluyen atributos personales y financieros. Requieren mínimo privilegio, cifrado, retención definida y revisión humana antes de usar las predicciones.</p>
