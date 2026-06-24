@@ -1,29 +1,27 @@
 import pandas as pd
 
 from bi_integration import write_bi_guide
-from charts import generate_charts
 from config import (
-    DASHBOARD_FILE,
-    DATABASE_FILE,
-    ERROR_REPORT_FILE,
-    FINAL_DASHBOARD_FILE,
-    LOG_FILE,
+    BASE_DIR,
+    PRESENTATION_REPORT_FILE,
     RESULTS_DIR,
+    ensure_result_dirs,
 )
 from database import load_analysis_tables, load_to_sqlite
 from eda_analysis import run_eda
-from final_dashboard import generate_final_dashboard
 from ingestion import ingest_data
 from logger_config import setup_logger
 from model_evaluation import evaluate_model
 from model_training import train_models
 from performance_monitor import PerformanceMonitor
+from presentation_report import generate_presentation_report
 from security_audit import run_security_audit
 from transform import clean_and_transform
 from validation import validate_data
 
 
 def main():
+    ensure_result_dirs()
     logger = setup_logger()
     monitor = PerformanceMonitor()
     logger.info("Inicio del pipeline")
@@ -37,8 +35,6 @@ def main():
             valid_df = validate_data(clean_df, logger)
         with monitor.measure("carga_sqlite"):
             load_to_sqlite(valid_df, logger)
-        with monitor.measure("dashboard_calidad"):
-            generate_charts(len(clean_df), logger)
         with monitor.measure("eda"):
             run_eda(valid_df, logger)
         with monitor.measure("entrenamiento"):
@@ -61,24 +57,19 @@ def main():
             logger,
         )
         write_bi_guide()
-        generate_final_dashboard(
+        generate_presentation_report(
             len(clean_df),
             len(valid_df),
             metrics,
             training_result["comparison"],
-            performance,
             risks,
             logger,
         )
 
         logger.info("Fin del pipeline")
-        print("\nPipeline ejecutado correctamente")
-        print(f"Carpeta final de resultados: {RESULTS_DIR}")
-        print(f"Base de datos: {DATABASE_FILE}")
-        print(f"Archivo de logs: {LOG_FILE}")
-        print(f"Reporte de errores: {ERROR_REPORT_FILE}")
-        print(f"Dashboard HTML de KPIs: {DASHBOARD_FILE}")
-        print(f"Dashboard final del modelo: {FINAL_DASHBOARD_FILE}")
+        print("\nArchivos principales:")
+        print(f"  Informe para presentación → {PRESENTATION_REPORT_FILE.relative_to(BASE_DIR)}")
+        print(f"  Todos los resultados en   → {RESULTS_DIR.relative_to(BASE_DIR)}/")
 
     except Exception as error:
         logger.exception("Error durante la ejecución del pipeline: %s", error)

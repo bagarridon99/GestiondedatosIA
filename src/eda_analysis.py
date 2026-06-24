@@ -1,8 +1,8 @@
 import os
 
-from config import EDA_CHARTS_DIR, EDA_SUMMARY_FILE, RESULTS_DIR
+from config import EDA_CHARTS_DIR, EDA_SUMMARY_FILE, MPL_CACHE_DIR
 
-os.environ.setdefault("MPLCONFIGDIR", str(RESULTS_DIR / ".matplotlib-cache"))
+os.environ.setdefault("MPLCONFIGDIR", str(MPL_CACHE_DIR))
 
 import matplotlib
 

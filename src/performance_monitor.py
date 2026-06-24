@@ -8,7 +8,7 @@ from datetime import datetime
 import pandas as pd
 import psutil
 
-from config import EXECUTION_ENV, LOG_FILE, PERFORMANCE_METRICS_FILE, PERFORMANCE_REPORT_FILE
+from config import EXECUTION_ENV, LOG_FILE, PERFORMANCE_METRICS_FILE
 
 
 class PerformanceMonitor:
@@ -57,7 +57,6 @@ class PerformanceMonitor:
         history = self._load_history()
         combined = pd.concat([history, current], ignore_index=True)
         combined.to_csv(PERFORMANCE_METRICS_FILE, index=False)
-        self._write_report(combined)
         logger.info("Métricas de rendimiento guardadas en: %s", PERFORMANCE_METRICS_FILE)
         return current
 
@@ -83,25 +82,6 @@ class PerformanceMonitor:
             return pd.read_csv(PERFORMANCE_METRICS_FILE)
         except (pd.errors.EmptyDataError, pd.errors.ParserError):
             return pd.DataFrame()
-
-    def _write_report(self, history):
-        totals = history[history["etapa"] == "pipeline_total"].copy()
-        latest = history[history["run_id"] == self.run_id]
-        comparison = totals.tail(10).to_html(index=False, classes="table", border=0)
-        stages = latest.to_html(index=False, classes="table", border=0)
-        report = f"""<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><title>Rendimiento del pipeline</title>
-<style>body{{font-family:Arial;max-width:1200px;margin:32px auto;color:#1f2937}}
-.table{{border-collapse:collapse;width:100%;font-size:14px}}th,td{{padding:8px;border:1px solid #d1d5db}}
-th{{background:#e5e7eb}}.note{{background:#eff6ff;padding:14px;border-left:4px solid #2563eb}}</style></head>
-<body><h1>Análisis de rendimiento</h1>
-<p class="note">CPU corresponde al proceso Python y la memoria es RSS. El historial permite comparar
-volúmenes o entornos sin inventar mediciones de nube.</p>
-<h2>Última ejecución por etapa</h2>{stages}
-<h2>Comparación de ejecuciones</h2>{comparison}
-<p>Para comparar: <code>PIPELINE_SAMPLE_SIZE=10000 EXECUTION_ENV=local_10k python src/main.py</code></p>
-</body></html>"""
-        PERFORMANCE_REPORT_FILE.write_text(report, encoding="utf-8")
 
     def _cpu_seconds(self):
         cpu = self.process.cpu_times()

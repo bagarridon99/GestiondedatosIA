@@ -4,12 +4,12 @@ import os
 from config import (
     CONFUSION_MATRIX_FILE,
     MODEL_METRICS_FILE,
+    MPL_CACHE_DIR,
     PREDICTIONS_FILE,
-    RESULTS_DIR,
     ROC_CURVE_FILE,
 )
 
-os.environ.setdefault("MPLCONFIGDIR", str(RESULTS_DIR / ".matplotlib-cache"))
+os.environ.setdefault("MPLCONFIGDIR", str(MPL_CACHE_DIR))
 
 import matplotlib
 

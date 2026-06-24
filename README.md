@@ -2,7 +2,7 @@
 
 Pipeline académico de Gestión de Datos para IA (ITY1101). Procesa datos crediticios, controla su calidad,
 entrena modelos de clasificación para predecir `loan_status`, evalúa rendimiento y seguridad, y publica
-resultados para dashboard e integración BI.
+los resultados en un informe HTML resumido y tablas listas para integración BI.
 
 ## Flujo completo
 
@@ -16,9 +16,32 @@ resultados para dashboard e integración BI.
 8. **Evaluación:** genera accuracy, precision, recall, F1, matriz de confusión, ROC, AUC y Gini.
 9. **Rendimiento:** mide tiempo, CPU, memoria y errores por etapa; conserva historial de ejecuciones.
 10. **Seguridad:** revisa secretos, permisos, datos sensibles, roles y riesgos.
-11. **Visualización/BI:** genera un dashboard HTML y tablas listas para Power BI o Metabase.
+11. **Informe/BI:** genera un informe HTML resumido y tablas listas para Power BI o Metabase.
 
 ## Ejecución
+
+### Forma simple (recomendada)
+
+Un solo comando, sin activar el entorno ni recordar variables. La primera vez crea el entorno e
+instala las dependencias automáticamente.
+
+En Mac/Linux:
+
+```bash
+./run.sh          # dataset completo
+./run.sh 5000     # muestra de 5000 registros (más rápido)
+```
+
+En Windows (doble clic en `run.bat`, o desde la terminal):
+
+```bat
+run.bat
+run.bat 5000
+```
+
+Funciona desde cualquier carpeta usando la ruta completa al script.
+
+### Forma manual
 
 Desde la raíz del repositorio:
 
@@ -47,7 +70,7 @@ docker run --rm -v "$(pwd)/resultados:/app/resultados" pipeline-prestamos
 
 ## Comparación de rendimiento
 
-`performance_metrics.csv` acumula ejecuciones identificadas por entorno y volumen. Por ejemplo:
+`csv/performance_metrics.csv` acumula ejecuciones identificadas por entorno y volumen. Por ejemplo:
 
 ```bash
 PIPELINE_SAMPLE_SIZE=10000 EXECUTION_ENV=local_10k python src/main.py
@@ -59,27 +82,27 @@ carpeta `resultados`. Las mediciones de nube deben provenir de una ejecución re
 
 ## Archivos generados
 
-Todos quedan en `resultados/`:
+Quedan en `resultados/`, organizados por tipo en subcarpetas. El archivo principal es
+`html/informe_presentacion.html`.
 
 | Archivo | Contenido |
 |---|---|
-| `base_datos_validados.db` | Datos válidos y tablas de análisis para BI |
-| `reporte_registros_con_errores.csv` | Reglas incumplidas por los registros rechazados |
-| `dashboard_calidad_datos.html` | KPIs de calidad de la fase anterior |
-| `eda_resumen.csv` | Estadísticas descriptivas, nulos y duplicados |
-| `graficos_eda/` | Distribuciones, correlación y análisis bivariado |
-| `comparacion_modelos.csv` | Comparación de los dos algoritmos |
-| `model_metrics.json` | Métricas e interpretación del modelo seleccionado |
-| `modelo_entrenado.pkl` | Pipeline de preprocesamiento y modelo serializado |
-| `predicciones_modelo.csv` | Resultado real, predicción y probabilidad |
-| `matriz_confusion.png` | Aciertos y errores por clase |
-| `curva_roc.png` | Sensibilidad frente a falsos positivos |
-| `performance_metrics.csv` | Historial de tiempo, CPU, RAM y errores |
-| `performance_report.html` | Comparación visual de rendimiento |
-| `security_audit_report.md` | Auditoría, roles, normativa y limitaciones |
-| `security_risk_matrix.csv` | Riesgos, impacto, probabilidad y mitigación |
-| `dashboard_modelo_ia.html` | Dashboard integrado e interactivo |
-| `guia_integracion_bi.md` | Pasos y tablas para Power BI o Metabase |
+| `html/informe_presentacion.html` | **Informe principal:** gráficos, métricas y muestras de datos en una sola página |
+| `db/base_datos_validados.db` | Datos válidos y tablas de análisis para BI |
+| `csv/reporte_registros_con_errores.csv` | Reglas incumplidas por los registros rechazados |
+| `csv/eda_resumen.csv` | Estadísticas descriptivas, nulos y duplicados |
+| `csv/comparacion_modelos.csv` | Comparación de los dos algoritmos |
+| `csv/predicciones_modelo.csv` | Resultado real, predicción y probabilidad |
+| `csv/performance_metrics.csv` | Historial de tiempo, CPU, RAM y errores |
+| `csv/security_risk_matrix.csv` | Riesgos, impacto, probabilidad y mitigación |
+| `graficos/eda/` | Distribuciones, correlación y análisis bivariado |
+| `graficos/matriz_confusion.png` | Aciertos y errores por clase |
+| `graficos/curva_roc.png` | Sensibilidad frente a falsos positivos |
+| `json/model_metrics.json` | Métricas e interpretación del modelo seleccionado |
+| `modelo/modelo_entrenado.pkl` | Pipeline de preprocesamiento y modelo serializado |
+| `reportes/security_audit_report.md` | Auditoría, roles, normativa y limitaciones |
+| `reportes/guia_integracion_bi.md` | Pasos y tablas para Power BI o Metabase |
+| `logs/pipeline.log` | Registro completo de la ejecución |
 
 ## Interpretación de métricas
 
@@ -93,9 +116,10 @@ Todos quedan en `resultados/`:
 
 ## Integración BI y seguridad
 
-El dashboard HTML permite una demo local inmediata. Para evidencia de integración organizacional, SQLite
-expone `datos_validados`, `predicciones_modelo`, `metricas_modelo`, `comparacion_modelos`,
-`rendimiento_ultima_ejecucion` y `matriz_riesgos`. Consulta `resultados/guia_integracion_bi.md`.
+El informe HTML (`html/informe_presentacion.html`) permite una demo local inmediata. Para evidencia de
+integración organizacional, SQLite expone `datos_validados`, `predicciones_modelo`, `metricas_modelo`,
+`comparacion_modelos`, `rendimiento_ultima_ejecucion` y `matriz_riesgos`. Consulta
+`resultados/reportes/guia_integracion_bi.md`.
 
 Los datos incluyen atributos personales indirectos y financieros. No deben publicarse las predicciones
 detalladas sin autorización, control de acceso, propósito definido, retención limitada y revisión de sesgo.
@@ -105,7 +129,7 @@ detalladas sin autorización, control de acceso, propósito definido, retención
 - El dataset es una muestra académica sin dimensión temporal; falta validación externa y monitoreo de deriva.
 - La comparación usa una sola partición estratificada. Como mejora se propone validación cruzada y ajuste de hiperparámetros.
 - AUC alto no garantiza probabilidades calibradas ni decisiones justas. Se debe evaluar calibración, sesgo por grupos y explicabilidad.
-- El dashboard HTML facilita la demo, pero no implementa autenticación. En producción debe publicarse en BI con RBAC.
+- El informe HTML facilita la demo, pero no implementa autenticación. En producción debe publicarse en BI con RBAC.
 - El historial incluye mediciones locales de 10.000 y 45.000 registros. Una comparación con nube requiere ejecutar allí el pipeline.
 - SQLite es adecuado para la demo; PostgreSQL administrado permitiría concurrencia, respaldos y controles de acceso más robustos.
 
@@ -114,7 +138,9 @@ detalladas sin autorización, control de acceso, propósito definido, retención
 ```text
 data/raw/          Datos y metadata de entrada
 src/               Módulos del pipeline
-resultados/        Evidencias generadas (excluidas de Git)
+resultados/        Evidencias generadas en subcarpetas por tipo
+                   (db, csv, html, graficos, json, modelo, reportes, logs); excluidas de Git
+run.sh / run.bat   Ejecutan el pipeline (Mac/Linux y Windows)
 Dockerfile         Entorno reproducible Python 3.11
 requirements.txt   Dependencias
 ```
